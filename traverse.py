@@ -32,14 +32,13 @@ key = os.environ['KEY']
 # response = requests.post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', headers=headers, data=data)
 
 
-print(f"KEY: {key}")
-
 def traverseMap(key):
     """
     Returns a map of rooms and exits found when traversing a maze using server calls
     
     :param dict roomGraph: Graph of the world map to traverse  -- NEED TO REMOVE/MAKE UNNECESSARY
     :param player: Instance of the player class moving through the map   
+    TODO: Possible param map, feed it the map we have so far to keep exploring
     """
     # Call to initialize the game
     headers = {
@@ -47,151 +46,146 @@ def traverseMap(key):
         'Content-Type': 'application/json',
     }
 
-    response = requests.get('https://lambda-treasure-hunt.herokuapp.com/api/adv/init/', headers=headers)
-    data = response.json()
+    init_response = requests.get('https://lambda-treasure-hunt.herokuapp.com/api/adv/init/', headers=headers)
+    init_data = init_response.json()
 
-    # print(f"Initializing game response. Curr_room: {data['room_id']}, Room title: {data['title']}, Description: {data['description']}, Coordinates: {data['coordinates']}, EXITS: {data['exits']}, Cooldown: {data['cooldown']}, Errors: {data['errors']}, Message: {data['messages']}")
+    # print(f"Initializing game response. Curr_room: {init_data['room_id']}, Room title: {init_data['title']}, Description: init_{data['description']}, Coordinates: {init_data['coordinates']}, EXITS: {init_data['exits']}, Cooldown: {init_data['cooldown']}, Errors: init_{data['errors']}, Message: {init_data['messages']}")
 
-    time.sleep(data['cooldown'])
+    time.sleep(init_data['cooldown'])
 
-    # Tracks the shortest path through the maze?
-    traversalPath = []
+    # TODO: Do we need to track the shortest path through the maze?
+    # traversalPath = []
+
     # Keeps track of the current room player is in
-    curr_room = data['room_id']
+    curr_room = init_data['room_id']
 
     # Creates a map of rooms visited
     map = {
-        0: { 'n': '?', 's': '?', 'e': '?', 'w': '?', 'title': data['title']}
+        0: { 'n': '?', 's': 2, 'e': '?', 'w': '?', 'title': init_data['title']},
+        2: { 'n': 0, 's': '?', 'e': 3, 'w': None, 'title': "A Dark Room"},
+        3: { 'n': None, 's': '?', 'e': 3, 'w': 2, 'title': "A Dark Room"}
     }
 
     s = Stack()
     s.push( curr_room )
     last_room = 0
-    last_move = ''
 
     # while len < 500 (number of rooms)
     while len(map) < 500:
 
+        # Set next direction to move based on first ? unexplored exit found in curr_room
         to_move = ''
 
-        for key in map[curr_room].items():
-            if key == '?':
+        for key, value in map[curr_room].items():
+            if value == '?':
                 to_move = key
                 break
         
+        print(f"Next move is: {to_move}")
+
+        # If unexplored exit found, move that way
         if to_move:
-            # MOVE
-            # IF NOT IN MAP
-                # Iterate over data['exits'] and set room to map
+            # Create move object (no next room guess because it's ?)
+            move = { 'direction': f'{key}' }
+            send_move = f'{move}'   
+            print(f"Send move looks like: {send_move}. Headers: {headers}")
+
+            # TODO: DEBUG: This request is formatted properly but returning a 500 with the json parse error:
+            # json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+            # When tested in Postman with the same exact request, the reponse is successful
+            
+            # Sends request to move to server         
+            move_res = requests.post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', headers=headers, data=send_move)
+            print(f"Move response looks like: {move_res}")
+            # Parses response
+            data = move_res.json()
+            print(f"Parsed response is: {data}")
+            
+            # TODO: Add error handling for non-200 response or if data['errors'] contains a message
+
+            # Before updating curr_room, set direction moved to room_id, to update map's known exits
+            map[curr_room][to_move] = data['room_id']
+            # Sets last room to current
+            last_room = curr_room
+
+            # Sets curr_room to room moved to
+            curr_room = data['room_id']
+
+            # IF curr_room NOT IN MAP
+            if curr_room not in map:
+                # Create a new object for it in map
+                map[curr_room] = { 'n': None, 's': None, 'e': None, 'w': None, 'title': data['title']}
+
+                # Iterate over data['exits'] and set viable exits to room in map
+                for item in data['exits']:
+                    map[curr_room][item] = '?'
+
             # IF IN MAP
                 # Keep moving
-            pass
-        
-        else:
-            # BFS to find nearest unexplored exit
-            pass
-
-        if curr_room not in map:
-            map[curr_room] = { 'n': '?', 's': '?', 'e': '?', 'w': '?', 'title': data['title']}
-
-            # TODO: Make server call to move. Since no access to exits, check response. if 'n'/'s'/'e'/'w' not in res.exits (a list) 
-
-            # traversalPath.append('n')
-            # CALL TO MOVE
-            # last_move = 'n'
-            # last_room = player.currentRoom.id
-            # if direction not in res.exits, map[player.currentRoom.id][direction] = None
-            # USE time.sleep(res.cooldown) to force it to wait for the cooldown period before hitting the server again
-
-            # Checks for any exits that are dead ends and marks them as None in map
-            if curr_room.n_to == None:
-                map[curr_room.id]['n'] = None
-            if curr_room.s_to == None:
-                map[curr_room.id]['s'] = None
-            if curr_room.e_to == None:
-                map[curr_room.id]['e'] = None
-            if curr_room.w_to == None:
-                map[curr_room.id]['w'] = None
-        
-        # Updates last room with direction moved
-        for i in range(0,1):
-            if last_move == 'n':
-                map[curr_room.id]['s'] = last_room
-            elif last_move == 's':
-                map[curr_room.id]['n'] = last_room
-            elif last_move == 'e':
-                map[curr_room.id]['w'] = last_room
-            elif last_move == 'w':
-                map[curr_room.id]['e'] = last_room
-
-        # depending on direction moved, adds to traversalPath, and records last move/room, moves player
-        if map[curr_room.id]['n'] == '?':
-            traversalPath.append('n')
-            map[curr_room.id]['n'] = curr_room.n_to.id
-            last_move = 'n'
-            last_room = curr_room.id
-            player.travel('n')
             
-        elif map[curr_room.id]['s'] == '?':
-            traversalPath.append('s')
-            map[curr_room.id]['s'] = curr_room.s_to.id
-            last_move = 's'
-            last_room = curr_room.id
-            player.travel('s')
-
-        elif map[curr_room.id]['e'] == '?':
-            traversalPath.append('e')
-            map[curr_room.id]['e'] = curr_room.e_to.id
-            last_move = 'e'
-            last_room = curr_room.id
-            player.travel('e')
+            # Add previous room to current room, based on last direction moved
+            if to_move == 'n':
+                map[curr_room]['s'] = last_room
+            elif to_move == 's':
+                map[curr_room]['n'] = last_room
+            elif to_move == 'e':
+                map[curr_room]['w'] = last_room
+            elif to_move == 'w':
+                map[curr_room]['e'] = last_room
             
-        elif map[curr_room.id]['w'] == '?':
-            traversalPath.append('w')
-            map[curr_room.id]['w'] = curr_room.w_to.id
-            last_move = 'w'
-            last_room = curr_room.id
-            player.travel('w')
-
-        else:
-            # if all rooms now visited, end
+            # If now found all rooms, end while loop
+            # TODO: Should we go until we find all rooms or all exits?
             if len(map) == 500:
                 break
 
+            else:
+                # time out until cooldown period has passed
+                time.sleep(data['cooldown'])
+        
+        # If no unexplored exits found, need to BFS to find nearest
+        else:
+            # Until that is fixed, break out of loop and return what was found
+            break
+
             # TODO: Replace roomGraph with a call to the server to find next viable path?
             # BFS to nearest unexplored exit and appends to traversalPath
-            next_path = find_nearest_unexplored(curr_room, roomGraph, map)
+            # next_path = find_nearest_unexplored(curr_room, map)
 
             # Adds shortest path to next unexplored to traversalPath
             # Moves player through those rooms
-            for direction in next_path["path"]:
-                player.travel(direction)
-                traversalPath.append(direction)
+            # for direction in next_path["path"]:
+            #     player.travel(direction)
+            #     traversalPath.append(direction)
             
-            last_move = next_path["path"][-1]
+            # last_move = next_path["path"][-1]
                         
             # Updates map with newly explored rooms
-            map = next_path["updated_map"]
+            # map = next_path["updated_map"]
 
             # updates last room based on final move in BFS array returned
-            if last_move == 'n':
-                last_room = map[player.currentRoom.id]['s']
-            elif last_move == 's':
-                last_room = map[player.currentRoom.id]['n']
-            elif last_move == 'e':
-                last_room = map[player.currentRoom.id]['w']
-            elif last_move == 'w':
-                last_room = map[player.currentRoom.id]['e']
+            # if last_move == 'n':
+            #     last_room = map[player.currentRoom.id]['s']
+            # elif last_move == 's':
+            #     last_room = map[player.currentRoom.id]['n']
+            # elif last_move == 'e':
+            #     last_room = map[player.currentRoom.id]['w']
+            # elif last_move == 'w':
+            #     last_room = map[player.currentRoom.id]['e']
             
     return map
 
 
-def find_nearest_unexplored(curr_room, graph, map):
+updated_map = traverseMap(key)
+print(updated_map)
+
+
+# TODO: Fix this BFS function for treasure hunt purposes, remove player and graph references, add server calls
+def find_nearest_unexplored(curr_room, map):
     """
     Returns object { "room": integer, "path": list, updated_map: dict }
     
     :param int curr_room: Current room player is in  
-    :param dict graph: Graph of the world map to traverse  
+    :param dict graph: Graph of the world map to traverse -- REMOVE
     :param dict map: Dictionary containing found rooms and exits  
     """
     # `graph` needs to be replaced with call to move on server
@@ -264,5 +258,3 @@ def find_nearest_unexplored(curr_room, graph, map):
             curr_room = next_room
 
     return { "room": curr_room, "path": chosen_path, "updated_map": map}
-
-traverseMap(key)
