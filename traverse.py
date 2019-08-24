@@ -1,3 +1,7 @@
+import requests
+import os
+from utils.py import Stack, Queue
+
 # Response from server
 # {
 #   "room_id": 10,
@@ -13,36 +17,24 @@
 # SEND to server to move
 # {"direction":"s", "next_room_id": "0"}
 
+# Initial Call
 
-class Stack():
-    def __init__(self):
-        self.stack = []
-    def __repr__(self):
-        return f"{self.stack}"
-    def push(self, value):
-        self.stack.append(value)
-    def pop(self):
-        if self.size() > 0:
-            return self.stack.pop()
-        else:
-            return None
-    def size(self):
-        return len(self.stack)
+headers = {
+    'Authorization': f"Token {os.environ["KEY"]}",
+}
 
-class Queue():
-    def __init__(self):
-        self.queue = []
-    def __repr__(self):
-        return f"Queue: {self.queue}"
-    def enqueue(self, value):
-        self.queue.append(value)
-    def dequeue(self):
-        if self.size() > 0:
-            return self.queue.pop(0)
-        else:
-            return None
-    def size(self):
-        return len(self.queue)
+response = requests.get('https://lambda-treasure-hunt.herokuapp.com/api/adv/init/', headers=headers)
+
+# MOVE
+
+headers = {
+    'Authorization': f"Token {os.environ["KEY"]}",
+    'Content-Type': 'application/json',
+}
+
+data = '{"direction":"s", "next_room_id": "0"}'
+
+response = requests.post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', headers=headers, data=data)
 
 
 def traverseMap(roomGraph, player):
