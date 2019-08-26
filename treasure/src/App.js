@@ -1,23 +1,22 @@
 import React from "react";
 import "./App.css";
-import axiosWithAuth from "./utils";
+import { axiosWithAuth, makeMap } from "./utils";
 
 class App extends React.Component {
-  initGame = () => {
-    axiosWithAuth()
-      .get("init/")
-      .then(res => {
-        console.log(res);
-      });
+  initGame = async () => {
+    const { data: startingRoom } = await axiosWithAuth().get("init/");
+    console.log(startingRoom);
+    makeMap(startingRoom);
   };
-  move = () => {
-    axiosWithAuth()
-      .post("move/", { direction: "n" })
-      .then(res => {
-        console.log(res);
-      });
+  move = async () => {
+    const { data: currentRoom } = await axiosWithAuth().post("move/", {
+      direction: "s"
+    });
+    console.log(currentRoom);
   };
-  buildMap = () => {};
+  buildMap = async () => {
+    makeMap();
+  };
 
   render() {
     return (
