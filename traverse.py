@@ -148,8 +148,9 @@ def traverseMap(key, graph=None):
         # If no unexplored exits found, need to BFS to find nearest
         else:
             # Return that player found dead end
-            return f"Dead end found! Find nearest unexplored exit or return to Py's shop?"
+            return f"Dead end found! Find nearest unexplored exit or return to Pirate Ry's shop?"
             
+    # TODO: Should we return the map or just update localStorage?
     return map
 
 
