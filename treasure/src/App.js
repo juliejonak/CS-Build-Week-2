@@ -23,12 +23,11 @@ class App extends React.Component {
   buildMap = () => {};
 
   render() {
-    const printWords = ["Welcome to the Lambda Treasure Hunt. \n", "To play, click a button to move through the maze.", "Try to find treasure that you can sell at Pirate Ry's for gold.", "When you have 1000 gold, you can become an official Lambda Miner with the power to mine Lambda Coins.", "Good luck Explorer!"];
+    const printWords = ["Welcome to the Lambda Treasure Hunt. \n", "Click a button to move through the maze. \n", "Find treasure you can sell at Pirate Ry's for gold. \n", "When you have 1000 gold, buy a pick-axe to mine Lambda Coins. \n", "Good luck Explorer! \n"];
     return (
       <div className="App">
-        <h4>Lambda CS Build Week 2</h4>
-        <GameScreen messages={printWords}/>
         <ButtonBar/>
+        <GameScreen messages={printWords}/>
         <button onClick={this.initGame}>initial</button>
         <button onClick={this.move}>move</button>
       </div>

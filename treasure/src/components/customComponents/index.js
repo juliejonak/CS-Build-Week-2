@@ -19,11 +19,14 @@ export const Button = styled.div`
     }
 
     @media (max-width: 799px) {
-        margin-top: 15%;
+        margin-top: 10%;
+        height: 8vh;
+        width: 25%;
+        font-size: 1.1em;
     }
 
     @media (min-width: 800px) {
-        margin-top: 5%;
+        margin-bottom: 5%;
     }
 `
 
@@ -42,23 +45,42 @@ export const ButtonBox = styled.div`
         flex-direction: row;
         flex-wrap: wrap;
         flex-grow: 2;
+        margin-top: 3%;
+        margin-bottom: -4%;
     }
-
 `
 
 export const Background = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    
+
+    @media (max-width: 799px) {
+        margin-bottom: 5%;
+        margin-top: 1%;
+    }
+
+    @media (min-width: 800px) {
+        margin-bottom: 5%;
+        margin-top: 3%;
+    }
 `
 
 export const TextScreen = styled.div`
     width: 80%;
-    height: 2vh;
+    height: 20vh;
     background-color: black;
     color: green;
     margin: 0 auto;
     padding: 5%;
     text-align: left;
     overflow: auto;
+    font-weight: bold;
+    white-space: pre-line;
+
+    @media (max-width: 799px) {
+        width: 70%;
+        height: 100%;
+    }
 `
