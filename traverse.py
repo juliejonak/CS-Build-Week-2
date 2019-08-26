@@ -32,13 +32,12 @@ key = os.environ['KEY']
 # response = requests.post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', headers=headers, data=data)
 
 
-def traverseMap(key):
+def traverseMap(key, graph=None):
     """
     Returns a map of rooms and exits found when traversing a maze using server calls
-
-    :param dict roomGraph: Graph of the world map to traverse  -- NEED TO REMOVE/MAKE UNNECESSARY
-    :param player: Instance of the player class moving through the map   
-    TODO: Possible param map, feed it the map we have so far to keep exploring
+    
+    :param key: API key to send request to server
+    :param graph: Optional -- pass in currently explored map to add to   
     """
     # Call to initialize the game
     headers = {
@@ -54,18 +53,20 @@ def traverseMap(key):
 
     time.sleep(init_data['cooldown'])
 
-    # TODO: Do we need to track the shortest path through the maze?
-    # traversalPath = []
-
     # Keeps track of the current room player is in
     curr_room = init_data['room_id']
+    print(f"Currently in room {curr_room}")
 
-    # Creates a map of rooms visited
-    map = {
-        0: {'n': '?', 's': 2, 'e': '?', 'w': '?', 'title': init_data['title']},
-        2: {'n': 0, 's': '?', 'e': 3, 'w': None, 'title': "A Dark Room"},
-        3: {'n': None, 's': '?', 'e': 3, 'w': 2, 'title': "A Dark Room"}
-    }
+    # If no passed in graph, creates a map of rooms visited
+    if graph == None:
+        map = {
+            0: { 'n': '?', 's': 2, 'e': '?', 'w': '?', 'title': init_data['title']},
+            2: { 'n': 0, 's': '?', 'e': 3, 'w': None, 'title': "A Dark Room"},
+            3: { 'n': None, 's': '?', 'e': 3, 'w': 2, 'title': "A Dark Room"}
+        }
+    else:
+        # Otherwise sets map = to the passed graph parameter
+        map = graph
 
     s = Stack()
     s.push(curr_room)
@@ -95,15 +96,15 @@ def traverseMap(key):
             # json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
             # When tested in Postman with the same exact request, the reponse is successful
 
-            # Sends request to move to server
-            move_res = requests.post(
-                'https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', headers=headers, data=send_move)
+            # Sends request to move to server         
+            move_res = requests.post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', headers=headers, data=send_move)
             print(f"Move response looks like: {move_res}")
             # Parses response
             data = move_res.json()
             print(f"Parsed response is: {data}")
 
             # TODO: Add error handling for non-200 response or if data['errors'] contains a message
+            # TODO: Add map and room information to localStorage
 
             # Before updating curr_room, set direction moved to room_id, to update map's known exits
             map[curr_room][to_move] = data['room_id']
@@ -137,7 +138,8 @@ def traverseMap(key):
                 map[curr_room]['e'] = last_room
 
             # If now found all rooms, end while loop
-            # TODO: Should we go until we find all rooms or all exits?
+            # TODO: Pickup any treasure found
+            # TODO: Build an explore function if we've found all 500 rooms (find a specific number room?)
             if len(map) == 500:
                 break
 
@@ -147,34 +149,9 @@ def traverseMap(key):
 
         # If no unexplored exits found, need to BFS to find nearest
         else:
-            # Until that is fixed, break out of loop and return what was found
-            break
-
-            # TODO: Replace roomGraph with a call to the server to find next viable path?
-            # BFS to nearest unexplored exit and appends to traversalPath
-            # next_path = find_nearest_unexplored(curr_room, map)
-
-            # Adds shortest path to next unexplored to traversalPath
-            # Moves player through those rooms
-            # for direction in next_path["path"]:
-            #     player.travel(direction)
-            #     traversalPath.append(direction)
-
-            # last_move = next_path["path"][-1]
-
-            # Updates map with newly explored rooms
-            # map = next_path["updated_map"]
-
-            # updates last room based on final move in BFS array returned
-            # if last_move == 'n':
-            #     last_room = map[player.currentRoom.id]['s']
-            # elif last_move == 's':
-            #     last_room = map[player.currentRoom.id]['n']
-            # elif last_move == 'e':
-            #     last_room = map[player.currentRoom.id]['w']
-            # elif last_move == 'w':
-            #     last_room = map[player.currentRoom.id]['e']
-
+            # Return that player found dead end
+            return f"Dead end found! Find nearest unexplored exit or return to Py's shop?"
+            
     return map
 
 
