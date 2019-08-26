@@ -88,15 +88,14 @@ def traverseMap(key, graph=None):
         if to_move:
             # Create move object (no next room guess because it's ?)
             move = { 'direction': f'{key}' }
-            send_move = f'{move}'   
-            print(f"Send move looks like: {send_move}. Headers: {headers}")
+            print(f"Send move looks like: {move}. Headers: {headers}")
 
             # TODO: DEBUG: This request is formatted properly but returning a 500 with the json parse error:
             # json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
             # When tested in Postman with the same exact request, the reponse is successful
 
             # Sends request to move to server         
-            move_res = requests.post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', headers=headers, data=send_move)
+            move_res = requests.post('https://lambda-treasure-hunt.herokuapp.com/api/adv/move/', headers=headers, data=move)
             print(f"Move response looks like: {move_res}")
             # Parses response
             data = move_res.json()
