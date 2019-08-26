@@ -13,7 +13,7 @@ const ButtonBar = () => {
                     <FontAwesomeIcon icon={faMap} />
                 </Button>
                 <Button>
-                    <p>Pirate Ry's Store</p>
+                    <p>Pirate Ry's</p>
                     <FontAwesomeIcon icon={faStore} />
                 </Button>
                 <Button>
@@ -21,7 +21,7 @@ const ButtonBar = () => {
                     <FontAwesomeIcon icon={faGem} />
                 </Button>
                 <Button>
-                    <p>Mine Coin</p>
+                    <p>Mine Coins</p>
                     <FontAwesomeIcon icon={faCoins} />
                 </Button>
             </ButtonBox>

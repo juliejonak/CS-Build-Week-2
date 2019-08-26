@@ -25,7 +25,7 @@ class App extends React.Component {
   render() {
     const printWords = ["Welcome to the Lambda Treasure Hunt. \n", "Click a button to move through the maze. \n", "Find treasure you can sell at Pirate Ry's for gold. \n", "When you have 1000 gold, buy a pick-axe to mine Lambda Coins. \n", "Good luck Explorer! \n"];
     return (
-      <div className="App">
+      <div className="App" style={{backgroundColor: '#FDF5DE', height: '100vh', marginTop: '-3%'}}>
         <ButtonBar/>
         <GameScreen messages={printWords}/>
         <button onClick={this.initGame}>initial</button>
