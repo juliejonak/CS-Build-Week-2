@@ -45,7 +45,8 @@ def traverseMap(key, graph=None):
         'Content-Type': 'application/json',
     }
 
-    init_response = requests.get('https://lambda-treasure-hunt.herokuapp.com/api/adv/init/', headers=headers)
+    init_response = requests.get(
+        'https://lambda-treasure-hunt.herokuapp.com/api/adv/init/', headers=headers)
     init_data = init_response.json()
 
     # print(f"Initializing game response. Curr_room: {init_data['room_id']}, Room title: {init_data['title']}, Description: init_{data['description']}, Coordinates: {init_data['coordinates']}, EXITS: {init_data['exits']}, Cooldown: {init_data['cooldown']}, Errors: init_{data['errors']}, Message: {init_data['messages']}")
@@ -68,7 +69,7 @@ def traverseMap(key, graph=None):
         map = graph
 
     s = Stack()
-    s.push( curr_room )
+    s.push(curr_room)
     last_room = 0
 
     # while len < 500 (number of rooms)
@@ -81,7 +82,7 @@ def traverseMap(key, graph=None):
             if value == '?':
                 to_move = key
                 break
-        
+
         print(f"Next move is: {to_move}")
 
         # If unexplored exit found, move that way
@@ -100,7 +101,7 @@ def traverseMap(key, graph=None):
             # Parses response
             data = move_res.json()
             print(f"Parsed response is: {data}")
-            
+
             # TODO: Add error handling for non-200 response or if data['errors'] contains a message
             # TODO: Add map and room information to localStorage
 
@@ -115,7 +116,8 @@ def traverseMap(key, graph=None):
             # IF curr_room NOT IN MAP
             if curr_room not in map:
                 # Create a new object for it in map
-                map[curr_room] = { 'n': None, 's': None, 'e': None, 'w': None, 'title': data['title']}
+                map[curr_room] = {'n': None, 's': None,
+                                  'e': None, 'w': None, 'title': data['title']}
 
                 # Iterate over data['exits'] and set viable exits to room in map
                 for item in data['exits']:
@@ -123,7 +125,7 @@ def traverseMap(key, graph=None):
 
             # IF IN MAP
                 # Keep moving
-            
+
             # Add previous room to current room, based on last direction moved
             if to_move == 'n':
                 map[curr_room]['s'] = last_room
@@ -133,7 +135,7 @@ def traverseMap(key, graph=None):
                 map[curr_room]['w'] = last_room
             elif to_move == 'w':
                 map[curr_room]['e'] = last_room
-            
+
             # If now found all rooms, end while loop
             # TODO: Pickup any treasure found
             # TODO: Build an explore function if we've found all 500 rooms (find a specific number room?)
@@ -143,7 +145,7 @@ def traverseMap(key, graph=None):
             else:
                 # time out until cooldown period has passed
                 time.sleep(data['cooldown'])
-        
+
         # If no unexplored exits found, need to BFS to find nearest
         else:
             # Return that player found dead end
@@ -161,7 +163,7 @@ print(updated_map)
 def find_nearest_unexplored(curr_room, map):
     """
     Returns object { "room": integer, "path": list, updated_map: dict }
-    
+
     :param int curr_room: Current room player is in  
     :param dict graph: Graph of the world map to traverse -- REMOVE
     :param dict map: Dictionary containing found rooms and exits  
@@ -173,12 +175,12 @@ def find_nearest_unexplored(curr_room, map):
     # If we can send back next room, 50% reduction : {"direction":"s", "next_room_id": "0"}
     visited = {}
     q = Queue()
-    q.enqueue( { "room": curr_room, "path": [] } )
+    q.enqueue({"room": curr_room, "path": []})
     path_found = False
     chosen_path = None
 
     while not path_found:
-        
+
         check = q.dequeue()
         curr_path = check["path"]
         curr_room2 = check["room"]
@@ -197,7 +199,7 @@ def find_nearest_unexplored(curr_room, map):
             if value != None and value not in visited:
                 path_copy = list(curr_path)
                 path_copy.append(key)
-                visited[value] = { "room": value, "path": path_copy }
+                visited[value] = {"room": value, "path": path_copy}
                 q.enqueue(visited[value])
 
     for direction in chosen_path:
@@ -208,7 +210,7 @@ def find_nearest_unexplored(curr_room, map):
             # updates map[curr_room][direction] to next_room to mark as visited
             map[curr_room][direction] = next_room
             # Adds the next room to map as well
-            map[next_room] = { 'n': '?', 's': '?', 'e': '?', 'w': '?'}
+            map[next_room] = {'n': '?', 's': '?', 'e': '?', 'w': '?'}
 
             # Checks for non-valid exits to update in map so only viable un-explored exits are marked '?'
             if 'n' not in graph[next_room][1]:
@@ -219,7 +221,7 @@ def find_nearest_unexplored(curr_room, map):
                 map[next_room]['e'] = None
             if 'w' not in graph[next_room][1]:
                 map[next_room]['w'] = None
-            
+
             # Sets the curr_room to next_room
             if direction == 'n':
                 map[next_room]['s'] = curr_room
@@ -229,10 +231,10 @@ def find_nearest_unexplored(curr_room, map):
                 map[next_room]['w'] = curr_room
             if direction == 'w':
                 map[next_room]['e'] = curr_room
-            
+
             curr_room = next_room
 
         else:
             curr_room = next_room
 
-    return { "room": curr_room, "path": chosen_path, "updated_map": map}
+    return {"room": curr_room, "path": chosen_path, "updated_map": map}
