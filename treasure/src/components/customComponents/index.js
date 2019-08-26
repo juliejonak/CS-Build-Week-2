@@ -51,3 +51,14 @@ export const Background = styled.div`
     flex-direction: column;
     align-items: center;
 `
+
+export const TextScreen = styled.div`
+    width: 80%;
+    height: 2vh;
+    background-color: black;
+    color: green;
+    margin: 0 auto;
+    padding: 5%;
+    text-align: left;
+    overflow: auto;
+`
