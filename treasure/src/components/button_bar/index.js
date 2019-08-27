@@ -6,14 +6,14 @@ import { faMap, faStore, faCoins, faGem } from '@fortawesome/free-solid-svg-icon
 const ButtonBar = () => {
     return(
         <Background>
-            <h1>Choose an action</h1>
+            <h1>Lambda Treasure Hunt</h1>
             <ButtonBox>
-                <Button>
+                <Button style={{marginTop: '0%'}}>
                     <p>Explore</p>
                     <FontAwesomeIcon icon={faMap} />
                 </Button>
                 <Button>
-                    <p>Pirate Ry's Store</p>
+                    <p>Pirate Ry's</p>
                     <FontAwesomeIcon icon={faStore} />
                 </Button>
                 <Button>
@@ -21,7 +21,7 @@ const ButtonBar = () => {
                     <FontAwesomeIcon icon={faGem} />
                 </Button>
                 <Button>
-                    <p>Mine Coin</p>
+                    <p>Mine Coins</p>
                     <FontAwesomeIcon icon={faCoins} />
                 </Button>
             </ButtonBox>
