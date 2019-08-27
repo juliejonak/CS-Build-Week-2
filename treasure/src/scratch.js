@@ -56,14 +56,17 @@ const proof_of_work = (last_proof, difficulty) => {
     console.log("New_proof returned", new_proof)
   
     // Sends new proof to server
+    const proof_response = await BCaxiosWithAuth().post("mine/", { proof });
+        // If successful, we'll get a coin (keep count?)
+        // If not, 30 sec cooldown
   
-    // Time out for 30 seconds
+    // Time out for 30 seconds & do it again
     console.log("Waiting for cooldown to pass")
     setTimeout(()=>{
         mineCoins(123456, difficulty)
     }, 30000)
-    // Do it again
     
+    // Currently doesn't stop mining -- endless loop
   }
   
   mineCoins(123456, 5)

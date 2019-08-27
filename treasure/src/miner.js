@@ -1,21 +1,6 @@
-import axios from "axios";
 import { BCaxiosWithAuth } from "./utils";
 import sha256 from 'sha256';
 
-// Get last valid proof
-// res.difficulty = Number of leading 0's required at the beginning of the hash
-
-// Once proof is found, submit to mine
-
-// {
-//     "proof": 123456,
-//     "difficulty": 8,
-//     "cooldown": 1.0,
-//     "messages": [],
-//     "errors": []
-// }
-
-// If res is not successful, use 30 second timeout before sending new proof
 const sendProof = async proof => {
   return await BCaxiosWithAuth().post("mine/", { proof });
 };
@@ -54,25 +39,31 @@ const proof_of_work = (last_proof, difficulty) => {
 
 const valid_proof = (proof, answer, difficulty) => {
   // guess_hash = first difficulty characters of the proof hashed
-  guess_hash = sha256(proof).substring(0, difficulty)
+  guess_hash = sha256(proof.toString()).substring(0, difficulty)
   // returns boolean value of if it matches expected output
   return guess_hash === answer
 }
 
 
-
 export const mineCoins = async () => {
   // Fetches last proof object from server
-  const { data: last_proof } = await axiosWithAuth().get("last_proof/");
-
-  // Finds a new valid proof
-  new_proof = await proof_of_work(last_proof.proof, last_proof.difficulty)
-  console.log("New_proof returned", new_proof)
-
-  // Sends new proof to server
-
-  // Time out for 30 seconds
-  // Do it again
+    // const { data: last_proof } = await axiosWithAuth().get("last_proof/");
   
+    // Finds a new valid proof
+    new_proof = await proof_of_work(last_proof.proof, last_proof.difficulty)
+    console.log("New_proof returned", new_proof)
+  
+    // Sends new proof to server
+    const proof_response = await BCaxiosWithAuth().post("mine/", { proof });
+        // If successful, we'll get a coin (keep count?)
+        // If not, 30 sec cooldown
+  
+    // Time out for 30 seconds & do it again
+    console.log("Waiting for cooldown to pass")
+    setTimeout(()=>{
+        mineCoins(123456, difficulty)
+    }, 30000)
+    
+    // Currently doesn't stop mining -- endless loop 
 }
 
