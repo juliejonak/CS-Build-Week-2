@@ -16,7 +16,6 @@ class Queue {
 }
 
 export function axiosWithAuth() {
-  console.log(process.env.REACT_APP_API_KEY)
   return axios.create({
     baseURL: "https://lambda-treasure-hunt.herokuapp.com/api/adv/",
     headers: {

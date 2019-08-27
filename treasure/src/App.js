@@ -15,7 +15,6 @@ class App extends React.Component {
     this.initGame();
   }
   initGame = async () => {
-    console.log(process.env.REACT_APP_API_KEY)
     const { data: startingRoom } = await axiosWithAuth().get("init/");
     this.setState(
       { startingRoom, currentRoom: startingRoom },
