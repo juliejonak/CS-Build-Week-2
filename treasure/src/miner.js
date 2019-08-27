@@ -1,5 +1,5 @@
 import { BCaxiosWithAuth } from "./utils";
-import sha256 from 'sha256';
+import sha256 from 'js-sha256';
 
 const sendProof = async proof => {
   return await BCaxiosWithAuth().post("mine/", { proof });
