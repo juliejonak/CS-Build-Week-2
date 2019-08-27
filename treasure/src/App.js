@@ -119,7 +119,7 @@ class App extends React.Component {
         }}
       >
         <ButtonBar />
-        {/* <GameScreen messages={printWords} /> */}
+        <GameScreen messages={printWords} />
         <button onClick={this.initGame}>initial</button>
         <button onClick={this.explore}>explore</button>
       </div>
