@@ -27,16 +27,10 @@ export function axiosWithAuth() {
 
 export function makeMap(startingRoom, world = null) {
   let currentRoomId = startingRoom["room_id"];
-  let map = world;
-  if (!world) {
-    map = {
-      0: { n: "?", s: "?", e: "?", w: "?", title: startingRoom["title"] }
-    };
-  }
-  let unExplored = [];
-  unExplored.push(currentRoomId);
-  let lastRoom = 0;
-  // while (Object.keys(map).length < 500) {
+  let map = JSON.parse(world);
+  let unExplored = [currentRoomId];
+  let prevRoomId = 0;
+  // while (Object.keys(map).length < 5) {
   let direction = "";
   for (let key in map[currentRoomId]) {
     if (map[currentRoomId][key] === "?") {
@@ -44,8 +38,48 @@ export function makeMap(startingRoom, world = null) {
       break;
     }
   }
+  // if (Object.keys(map).length === 5) {
+  // break;
+  // }
   if (direction) {
-    let move = { direction };
+    console.log(direction);
+    // axiosWithAuth()
+    //   .post("move/", { direction })
+    //   .then(({ data: { room_id, exits, title } }) => {
+    //     map[currentRoomId][direction] = room_id;
+    //     prevRoomId = currentRoomId;
+    //     currentRoomId = room_id;
+
+    //     if (!map[currentRoomId]) {
+    //       map[currentRoomId] = {
+    //         n: null,
+    //         s: null,
+    //         w: null,
+    //         e: null,
+    //         title
+    //       };
+    //       for (let exit of exits) {
+    //         map[currentRoomId][exit] = "?";
+    //       }
+    //     }
+    //     console.log(prevRoomId, direction);
+    //     switch (direction) {
+    //       case "n":
+    //         map[currentRoomId]["s"] = prevRoomId;
+    //         break;
+    //       case "s":
+    //         map[currentRoomId]["n"] = prevRoomId;
+    //         break;
+    //       case "e":
+    //         map[currentRoomId]["w"] = prevRoomId;
+    //         break;
+    //       case "w":
+    //         map[currentRoomId]["e"] = prevRoomId;
+    //         break;
+    //     }
+    //   });
   }
   // }
+  console.log(map);
+  return map;
 }
