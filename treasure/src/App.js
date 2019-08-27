@@ -1,9 +1,8 @@
 import React from "react";
 import "./App.css";
-import {axiosWithAuth} from "./utils";
-import ButtonBar from './components/button_bar/index'
+import { axiosWithAuth } from "./utils";
+import ButtonBar from "./components/button_bar/index";
 import GameScreen from "./components/gameScreen";
-
 
 class App extends React.Component {
   state = {
@@ -103,20 +102,26 @@ class App extends React.Component {
   };
 
   render() {
-    const printWords = ["Welcome to the Lambda Treasure Hunt. \n", "Click a button to move through the maze. \n", "Find treasure you can sell at Pirate Ry's for gold. \n", "When you have 1000 gold, buy a pick-axe to mine Lambda Coins. \n", "Good luck Explorer! \n"];
+    const printWords = [
+      "Welcome to the Lambda Treasure Hunt. \n",
+      "Click a button to move through the maze. \n",
+      "Find treasure you can sell at Pirate Ry's for gold. \n",
+      "When you have 1000 gold, buy a pick-axe to mine Lambda Coins. \n",
+      "Good luck Explorer! \n"
+    ];
     return (
-<<<<<<< HEAD
-      <div className="App">
-        <h4>Lambda CS Build Week 2</h4>
+      <div
+        className="App"
+        style={{
+          backgroundColor: "#FDF5DE",
+          height: "100vh",
+          marginTop: "-3%"
+        }}
+      >
         <ButtonBar />
-        <button onClick={this.explore}>explore</button>
-=======
-      <div className="App" style={{backgroundColor: '#FDF5DE', height: '100vh', marginTop: '-3%'}}>
-        <ButtonBar/>
-        <GameScreen messages={printWords}/>
+        <GameScreen messages={printWords} />
         <button onClick={this.initGame}>initial</button>
         <button onClick={this.move}>move</button>
->>>>>>> e4f5ede2de0e6d44385a0dd306a29942264bdc71
       </div>
     );
   }
