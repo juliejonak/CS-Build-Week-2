@@ -30,7 +30,7 @@ class App extends React.Component {
     let { currentRoom } = this.state;
     let rng = Math.floor(Math.random() * currentRoom.exits.length);
     let direction = currentRoom.exits[rng];
-    if (Object.keys(currentMap) === 25) {
+    if (Object.keys(currentMap).length === 500) {
       return;
     }
     setTimeout(() => {
@@ -38,8 +38,8 @@ class App extends React.Component {
         this.updateMap(currentRoom, nextRoom, direction);
         currentRoom = nextRoom;
         this.setState({ currentRoom, startingRoom: nextRoom });
+        return this.explore();
       });
-      return this.explore();
     }, cooldown * 1000);
   };
   updateMap = (prevRoom, currentRoom, direction) => {
