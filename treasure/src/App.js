@@ -103,7 +103,7 @@ class App extends React.Component {
   };
 
   mine = async proof => {
-    mineCoins();
+    // mineCoins();
     return axiosWithAuth().post("mine/", { proof: `[${proof}]` });
   };
 
