@@ -4,7 +4,7 @@ import { axiosWithAuth } from "./utils";
 import ButtonBar from "./components/button_bar/index";
 import GameScreen from "./components/gameScreen";
 import map from "./roomMap";
-import {mineCoins} from "./miner";
+// import { mineCoins } from "./miner";
 
 class App extends React.Component {
   state = {
@@ -56,10 +56,10 @@ class App extends React.Component {
       cooldown: startingRoom.cooldown
     });
   };
-  pick =()=>{
-    console.log("Trying to pick up tiny treasure")
-    return axiosWithAuth().post('take/',{name:'tiny treasure'})
-  }
+  pick = () => {
+    console.log("Trying to pick up tiny treasure");
+    return axiosWithAuth().post("take/", { name: "tiny treasure" });
+  };
   getStatus = async () => {
     return await axiosWithAuth().post("status/");
   };
@@ -92,7 +92,10 @@ class App extends React.Component {
   };
 
   sell = async item => {
-    return axiosWithAuth().post("sell/", { name: 'tiny treasure', confirm: "yes" });
+    return axiosWithAuth().post("sell/", {
+      name: "tiny treasure",
+      confirm: "yes"
+    });
   };
 
   changeName = async name => {
@@ -100,6 +103,7 @@ class App extends React.Component {
   };
 
   mine = async proof => {
+    // mineCoins();
     return axiosWithAuth().post("mine/", { proof: `[${proof}]` });
   };
 
@@ -138,7 +142,7 @@ class App extends React.Component {
     // When we can dash, should change to:
     // console.log(pathToShop)
     // To get the line of moves to dash with
-    this.move(pathToShop)
+    this.move(pathToShop);
     // if (strength === encumbrance) {
     //   this.move(pathToShop);
     // } else if (strength > encumbrance) {
@@ -317,7 +321,7 @@ class App extends React.Component {
         <button onClick={this.goToShop}>go to shop</button>
         <button onClick={this.pick}>go to room</button>
         <button onClick={this.sell}>sell</button>
-        <button onClick={mineCoins}>MINE</button>
+        {/* <button onClick={this.mine}>MINE</button> */}
       </div>
     );
   }
