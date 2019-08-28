@@ -4,6 +4,8 @@ import { axiosWithAuth } from "./utils";
 import ButtonBar from "./components/button_bar/index";
 import GameScreen from "./components/gameScreen";
 import map from "./roomMap";
+import {mineCoins} from "./miner";
+
 class App extends React.Component {
   state = {
     map: map,
@@ -54,6 +56,10 @@ class App extends React.Component {
       cooldown: startingRoom.cooldown
     });
   };
+  pick =()=>{
+    console.log("Trying to pick up tiny treasure")
+    return axiosWithAuth().post('take/',{name:'tiny treasure'})
+  }
   getStatus = async () => {
     return await axiosWithAuth().post("status/");
   };
@@ -84,15 +90,19 @@ class App extends React.Component {
         .catch(err => console.log("err", err));
     }, cooldown * 1000);
   };
+
   sell = async item => {
-    return axiosWithAuth().post("sell/", { name: item, confirm: "yes" });
+    return axiosWithAuth().post("sell/", { name: 'tiny treasure', confirm: "yes" });
   };
+
   changeName = async name => {
     return axiosWithAuth().post("change_name/", { name: `[${name}]` });
   };
+
   mine = async proof => {
     return axiosWithAuth().post("mine/", { proof: `[${proof}]` });
   };
+
   move = direction => {
     const {
       status: { cooldown, strength, encumbrance }
@@ -120,25 +130,29 @@ class App extends React.Component {
   };
   goToShop = async () => {
     // find the shop
-    const pathToShop = await this.bfs(1);
+    const pathToShop = await this.bfs(250);
     // make sure we have enough items
     const {
       data: { strength, encumbrance }
     } = await this.getStatus();
-    if (strength === encumbrance) {
-      this.move(pathToShop);
-    } else if (strength > encumbrance) {
-      // pick a random room,
-      const rng = Math.floor(Math.random() * 500);
-      // get the path to that room
-      const pathToRoom = await this.bfs(rng);
-      console.log(pathToRoom, rng);
-      // move there,
-      this.move(pathToRoom)
-        .then(res => console.log("finished moving"))
-        .catch(err => console.log(err));
-      // pick up items along the way
-    }
+    // When we can dash, should change to:
+    // console.log(pathToShop)
+    // To get the line of moves to dash with
+    this.move(pathToShop)
+    // if (strength === encumbrance) {
+    //   this.move(pathToShop);
+    // } else if (strength > encumbrance) {
+    //   // pick a random room,
+    //   const rng = Math.floor(Math.random() * 500);
+    //   // get the path to that room
+    //   const pathToRoom = await this.bfs(rng);
+    //   console.log(pathToRoom, rng);
+    //   // move there,
+    //   this.move(pathToRoom)
+    //     .then(res => console.log("finished moving"))
+    //     .catch(err => console.log(err));
+    //   // pick up items along the way
+    // }
     console.log("really finished moving");
     // if we don't
     // pick up items
@@ -301,7 +315,9 @@ class App extends React.Component {
         {/* <GameScreen messages={printWords} /> */}
         <button onClick={this.initStatus}>get status</button>
         <button onClick={this.goToShop}>go to shop</button>
+        <button onClick={this.pick}>go to room</button>
         <button onClick={this.sell}>sell</button>
+        <button onClick={mineCoins}>MINE</button>
       </div>
     );
   }

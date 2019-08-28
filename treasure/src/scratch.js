@@ -10,6 +10,8 @@ const BCaxiosWithAuth = () => {
         "Content-Type": "application/json"
       }
     })
+    .then(res => console.log("In the then", res))
+    .catch(err => console.log("Catch err: ", err))
   }
 
 const proof_of_work = (last_proof, difficulty) => {
@@ -41,7 +43,7 @@ const proof_of_work = (last_proof, difficulty) => {
   
   const valid_proof = (proof, answer, difficulty) => {
     // guess_hash = first difficulty characters of the proof hashed
-    guess_hash = sha256(proof.toString()).substring(0, difficulty)
+    guess_hash = sha256(`${proof}`).substring(0, difficulty)
     // returns boolean value of if it matches expected output
     return guess_hash === answer
   }
@@ -56,9 +58,10 @@ const proof_of_work = (last_proof, difficulty) => {
     console.log("New_proof returned", new_proof)
   
     // Sends new proof to server
-    const proof_response = await BCaxiosWithAuth().post("mine/", { proof });
+    const proof_response = await BCaxiosWithAuth().post("mine/", { "proof": proof });
         // If successful, we'll get a coin (keep count?)
         // If not, 30 sec cooldown
+    console.log(proof_response)
   
     // Time out for 30 seconds & do it again
     console.log("Waiting for cooldown to pass")
@@ -69,8 +72,21 @@ const proof_of_work = (last_proof, difficulty) => {
     // Currently doesn't stop mining -- endless loop
   }
   
-  mineCoins(123456, 5)
-
+mineCoins(-350475268723623456, 7)
+const number_test = -2203683630650554.8
+const input = number_test.toString()
+console.log(sha256(input))
   // difficulty 4: .5 sec
   // difficulty 5: 1-5 sec
   // difficulty 6: 52 sec
+
+//   Last proof:  -3504752687236 Difficulty:  7
+//   Proof found:  -2203683630650554.8  in  1003610.2149999933
+
+// Proof found:  -6292412815968714  in  4003.8663600087166
+// 00000008464458c7401f5611765bea37583f0d5b076f39f6813da7b77ddd5513
+
+// Difficulty is  7  so valid is  0000000
+// Proof found:  -2186109695605861.2  in  416670.54064399004
+// 00000008464458c7401f5611765bea37583f0d5b076f39f6813da7b77ddd5513
+// New_proof returned -2186109695605861.2
