@@ -18,10 +18,10 @@ const proof_of_work = (last_proof, difficulty) => {
   // Randomize proof to be between -inf to 0, and 0 to inf if split between team members
 
   // Currently searches (-(2^53 - 1)) and (2^53 - 1). Could make smaller amounts for splitting between team members (averages 14-16 digit numbers)
-  proof = (Math.random() * Number.MAX_SAFE_INTEGER) + Number.MIN_SAFE_INTEGER
+  let proof = (Math.random() * Number.MAX_SAFE_INTEGER) + Number.MIN_SAFE_INTEGER
 
   // Sets what the valid proof leading characters needs to be
-  valid = '0'.repeat(difficulty)
+  const valid = '0'.repeat(difficulty)
   console.log("Difficulty is ", difficulty, " so valid is ", valid)
 
   // While guess proof is not equal to valid proof, keep incrementing proof
@@ -39,30 +39,33 @@ const proof_of_work = (last_proof, difficulty) => {
 
 const valid_proof = (proof, answer, difficulty) => {
   // guess_hash = first difficulty characters of the proof hashed
-  guess_hash = sha256(proof.toString()).substring(0, difficulty)
+  const guess_hash = sha256(proof.toString()).substring(0, difficulty)
   // returns boolean value of if it matches expected output
   return guess_hash === answer
 }
 
 
 export const mineCoins = async () => {
-  // Fetches last proof object from server
-    // const { data: last_proof } = await axiosWithAuth().get("last_proof/");
+  console.log("Start of mineCoins")
+  //Fetches last proof object from server
+  const { data: last_proof } = await BCaxiosWithAuth().get("last_proof/");
+  console.log("Last proof: ", last_proof.proof, "Difficulty: ", last_proof.difficulty)
   
     // Finds a new valid proof
-    new_proof = await proof_of_work(last_proof.proof, last_proof.difficulty)
-    console.log("New_proof returned", new_proof)
+    const proof = await proof_of_work(last_proof.proof, last_proof.difficulty)
+    console.log("New_proof returned", proof)
   
     // Sends new proof to server
     const proof_response = await BCaxiosWithAuth().post("mine/", { proof });
         // If successful, we'll get a coin (keep count?)
         // If not, 30 sec cooldown
   
+      return proof_response.data
     // Time out for 30 seconds & do it again
-    console.log("Waiting for cooldown to pass")
-    setTimeout(()=>{
-        mineCoins(123456, difficulty)
-    }, 30000)
+    // console.log("Waiting for cooldown to pass")
+    // setTimeout(()=>{
+    //     mineCoins(123456, last_proof.difficulty)
+    // }, 30000)
     
     // Currently doesn't stop mining -- endless loop 
 }

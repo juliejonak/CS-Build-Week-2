@@ -25,6 +25,16 @@ export function axiosWithAuth() {
   });
 }
 
+export const BCaxiosWithAuth = () => {
+  return axios.create({
+    baseURL: "https://lambda-treasure-hunt.herokuapp.com/api/bc/",
+    headers: {
+      Authorization: `Token ${process.env.REACT_APP_API_KEY}`,
+      "Content-Type": "application/json"
+    }
+  })
+}
+
 export function makeMap(startingRoom, world = null) {
   let currentRoomId = startingRoom["room_id"];
   let map = JSON.parse(world);
