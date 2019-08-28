@@ -3,9 +3,9 @@ import Typist from 'react-typist';
 import { TextScreen } from '../customComponents';
 
 class GameScreen extends React.Component {
-    componentDidUpdate(){
-        this.contentAreaReference.scrollToBottom()
-    }
+    // componentDidUpdate(){
+    //     this.contentAreaReference.scrollToBottom()
+    // }
   render(){
     return (
         <Typist cursor={{ show: false }} >
