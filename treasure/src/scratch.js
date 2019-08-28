@@ -21,16 +21,17 @@ const proof_of_work = (last_proof, difficulty) => {
   
     // Randomize proof to be between -inf to 0, and 0 to inf if split between team members
   
-    // Currently searches (-(2^53 - 1)) and (2^53 - 1). Could make smaller amounts for splitting between team members (averages 14-16 digit numbers)
-    proof = (Math.random() * Number.MAX_SAFE_INTEGER) + Number.MIN_SAFE_INTEGER
+    // Did search (-(2^53 - 1)) and (2^53 - 1), but changed to only positive ints for mashing with last_proof. Could make smaller amounts for splitting between team members (averages 14-16 digit numbers)
+    proof = (Math.random() * Number.MAX_SAFE_INTEGER)
   
     // Sets what the valid proof leading characters needs to be
     valid = '0'.repeat(difficulty)
     console.log("Difficulty is ", difficulty, " so valid is ", valid)
-  
+
+    
     // While guess proof is not equal to valid proof, keep incrementing proof
-    while (valid_proof(proof, valid, difficulty) == false) {
-      proof += (Math.random() * 1000) + 10
+    while (valid_proof(last_proof, proof, valid, difficulty) == false) {
+      proof += (Math.random() * 1000000000)
     }
   
     // Ends timer
@@ -41,9 +42,14 @@ const proof_of_work = (last_proof, difficulty) => {
     
   }
   
-  const valid_proof = (proof, answer, difficulty) => {
+  const valid_proof = (last_proof, proof, answer, difficulty) => {
+    let guess = encodeURI(`${last_proof}${proof}`)
+    // console.log("guess is: ", guess)
     // guess_hash = first difficulty characters of the proof hashed
-    guess_hash = sha256(`${proof}`).substring(0, difficulty)
+    guess_hash = sha256(`${guess}`).substring(0, difficulty)
+    if(guess_hash.substring(0,4) === 0000){
+        console.log(guess_hash)
+    }
     // returns boolean value of if it matches expected output
     return guess_hash === answer
   }
@@ -54,7 +60,7 @@ const proof_of_work = (last_proof, difficulty) => {
     // const { data: last_proof } = await axiosWithAuth().get("last_proof/");
   
     // Finds a new valid proof
-    new_proof = await proof_of_work(proof, difficulty)
+    new_proof = await proof_of_work(-3504752687236, difficulty)
     console.log("New_proof returned", new_proof)
   
     // Sends new proof to server
@@ -72,16 +78,19 @@ const proof_of_work = (last_proof, difficulty) => {
     // Currently doesn't stop mining -- endless loop
   }
   
-mineCoins(-350475268723623456, 7)
-const number_test = -2203683630650554.8
+mineCoins(-3504752687236, 7)
+const number_test = -3504752687236
 const input = number_test.toString()
 console.log(sha256(input))
-  // difficulty 4: .5 sec
-  // difficulty 5: 1-5 sec
-  // difficulty 6: 52 sec
-  // difficulty 7: 10-20 min
 
-//   Last proof:  -3504752687236 Difficulty:  7
+
+// difficulty 4: .5 sec
+// difficulty 5: 1-5 sec
+// difficulty 6: 52 sec
+// difficulty 7: 10-20 min
+
+// PRE-MASHING last_proof and proof
+//   Last proof:  -3504752687236 Difficulty:  7 --> hashes to 79ba9251f62b3675dd17e9d1c1316450acb457e28bec7e3cab01ca902731794b (No leading 0's?)
 //   Proof found:  -2203683630650554.8  in  1003610.2149999933
 
 // Proof found:  -6292412815968714  in  4003.8663600087166
@@ -91,3 +100,5 @@ console.log(sha256(input))
 // Proof found:  -2186109695605861.2  in  416670.54064399004
 // 00000008464458c7401f5611765bea37583f0d5b076f39f6813da7b77ddd5513
 // New_proof returned -2186109695605861.2
+
+// POST-MASHING last_proof and proof
