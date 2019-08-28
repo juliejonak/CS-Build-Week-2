@@ -79,6 +79,7 @@ console.log(sha256(input))
   // difficulty 4: .5 sec
   // difficulty 5: 1-5 sec
   // difficulty 6: 52 sec
+  // difficulty 7: 10-20 min
 
 //   Last proof:  -3504752687236 Difficulty:  7
 //   Proof found:  -2203683630650554.8  in  1003610.2149999933
