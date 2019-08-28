@@ -559,3 +559,7 @@ for (let room in map) {
 }
 
 export default newMap;
+// pickup
+// gettreasure
+// gotoshop
+// move

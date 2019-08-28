@@ -32,7 +32,7 @@ class App extends React.Component {
     const {
       data: { name, cooldown, encumbrance, strength, speed, gold, inventory }
     } = await this.getStatus();
-    console.log(cooldown);
+    console.log(cooldown, inventory);
     this.setState({
       status: {
         ...this.state.status,
@@ -60,6 +60,7 @@ class App extends React.Component {
   initChar = async () => {
     return await axiosWithAuth().get("init/");
   };
+
   pickUp = items => {
     console.log(items);
     const {
@@ -84,11 +85,15 @@ class App extends React.Component {
         .catch(err => console.log("err", err));
     }, cooldown * 1000);
   };
-  sell = async item => {
-    return axiosWithAuth().post("sell/", { name: item, confirm: "yes" });
-  };
+  // sell = async () => {
+  //   return axiosWithAuth().post("sell/", { name: item, confirm: "yes" });
+  // };
   changeName = async name => {
-    return axiosWithAuth().post("change_name/", { name: `[${name}]` });
+    const newName = await axiosWithAuth().post("change_name/", {
+      name: `["QuestionMark"]`
+    });
+    console.log(name);
+    return name;
   };
   mine = async proof => {
     return axiosWithAuth().post("mine/", { proof: `[${proof}]` });
@@ -120,25 +125,26 @@ class App extends React.Component {
   };
   goToShop = async () => {
     // find the shop
-    const pathToShop = await this.bfs(1);
+    const pathToShop = await this.bfs(250);
     // make sure we have enough items
     const {
       data: { strength, encumbrance }
     } = await this.getStatus();
-    if (strength === encumbrance) {
-      this.move(pathToShop);
-    } else if (strength > encumbrance) {
-      // pick a random room,
-      const rng = Math.floor(Math.random() * 500);
-      // get the path to that room
-      const pathToRoom = await this.bfs(rng);
-      console.log(pathToRoom, rng);
-      // move there,
-      this.move(pathToRoom)
-        .then(res => console.log("finished moving"))
-        .catch(err => console.log(err));
-      // pick up items along the way
-    }
+    console.log(pathToShop);
+    this.move(pathToShop);
+    // if (strength === encumbrance) {
+    // } else if (strength > encumbrance) {
+    //   // pick a random room,
+    //   const rng = Math.floor(Math.random() * 500);
+    //   // get the path to that room
+    //   const pathToRoom = await this.bfs(rng);
+    //   console.log(pathToRoom, rng);
+    //   // move there,
+    //   this.move(pathToRoom)
+    //     .then(res => console.log("finished moving"))
+    //     .catch(err => console.log(err));
+    //   // pick up items along the way
+    // }
     console.log("really finished moving");
     // if we don't
     // pick up items
@@ -175,7 +181,13 @@ class App extends React.Component {
     // return gold amount
   };
   findRy = () => {};
-
+  drop = async () => {
+    const dropped = await axiosWithAuth().post("drop/", {
+      name: "tiny treasure"
+    });
+    console.log(dropped);
+    return dropped;
+  };
   bfs = async (roomId = null) => {
     const { startingRoom, map } = this.state;
     const found = false;
@@ -302,6 +314,8 @@ class App extends React.Component {
         <button onClick={this.initStatus}>get status</button>
         <button onClick={this.goToShop}>go to shop</button>
         <button onClick={this.sell}>sell</button>
+        <button onClick={this.changeName}>change</button>
+        <button onClick={this.drop}>drop</button>
       </div>
     );
   }
