@@ -2,6 +2,13 @@
 const utf8 = require("utf8");
 const axios = require("axios");
 const sha256 = require("js-sha256");
+const wait = cooldown => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve(cooldown);
+    }, cooldown * 1000);
+  });
+};
 const BCaxiosWithAuth = () => {
   return axios.create({
     baseURL: "https://lambda-treasure-hunt.herokuapp.com/api/bc/",
@@ -14,7 +21,7 @@ const BCaxiosWithAuth = () => {
 const sendProof = async proof => {
   try {
     console.log("it worked!!!!!");
-    // return await BCaxiosWithAuth().post("mine/", { proof });
+    return await BCaxiosWithAuth().post("mine/", { proof });
   } catch (err) {
     console.log("err", err);
   }
@@ -32,7 +39,7 @@ const proof_of_work = (last_proof, difficulty) => {
   // Randomize proof to be between -inf to 0, and 0 to inf if split between team members
 
   // Currently searches (-(2^53 - 1)) and (2^53 - 1). Could make smaller amounts for splitting between team members (averages 14-16 digit numbers)
-  let proof = 100000000;
+  let proof = 17600000000;
 
   // Sets what the valid proof leading characters needs to be
   const valid = "0".repeat(difficulty);
@@ -68,10 +75,12 @@ const valid_proof = (proof, answer, difficulty, last_proof) => {
   return guess_hash === answer;
 };
 
-const mineCoins = async () => {
+const mineCoins = async cooldown => {
   console.log("Start of mineCoins");
+  await wait(cooldown);
   //Fetches last proof object from server
-  const { data: last_proof } = await BCaxiosWithAuth().get("last_proof/");
+  const last_proof = await getLastProof();
+  // console.log(last_proof.cooldown);
   console.log(
     "Last proof: ",
     last_proof.proof,
@@ -84,11 +93,12 @@ const mineCoins = async () => {
   console.log("New_proof returned", proof);
 
   // Sends new proof to server
-  const proof_response = sendProof(proof);
+  const { data } = await sendProof(proof);
+  console.log(data);
   // If successful, we'll get a coin (keep count?)
   // If not, 30 sec cooldown
 
-  return proof_response.data;
+  return mineCoins(data.cooldown);
   // Time out for 30 seconds & do it again
   // console.log("Waiting for cooldown to pass")
   // setTimeout(()=>{
@@ -98,3 +108,4 @@ const mineCoins = async () => {
   // Currently doesn't stop mining -- endless loop
 };
 mineCoins();
+// getLastProof();
