@@ -4,7 +4,7 @@ import { axiosWithAuth } from "./utils";
 import ButtonBar from "./components/button_bar/index";
 import GameScreen from "./components/gameScreen";
 import map from "./roomMap";
-import { mineCoins } from "./miner";
+// import { mineCoins } from "./miner";
 
 class App extends React.Component {
   state = {
@@ -321,7 +321,7 @@ class App extends React.Component {
         <button onClick={this.goToShop}>go to shop</button>
         <button onClick={this.pick}>go to room</button>
         <button onClick={this.sell}>sell</button>
-        <button onClick={this.mine}>MINE</button>
+        {/* <button onClick={this.mine}>MINE</button> */}
       </div>
     );
   }

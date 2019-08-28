@@ -14,7 +14,7 @@ const BCaxiosWithAuth = () => {
 const sendProof = async proof => {
   try {
     console.log("it worked!!!!!");
-    return await BCaxiosWithAuth().post("mine/", { proof });
+    // return await BCaxiosWithAuth().post("mine/", { proof });
   } catch (err) {
     console.log("err", err);
   }
@@ -32,7 +32,7 @@ const proof_of_work = (last_proof, difficulty) => {
   // Randomize proof to be between -inf to 0, and 0 to inf if split between team members
 
   // Currently searches (-(2^53 - 1)) and (2^53 - 1). Could make smaller amounts for splitting between team members (averages 14-16 digit numbers)
-  let proof = -1000000000;
+  let proof = 100000000;
 
   // Sets what the valid proof leading characters needs to be
   const valid = "0".repeat(difficulty);
