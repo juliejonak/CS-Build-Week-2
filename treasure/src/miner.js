@@ -23,7 +23,8 @@ const sendProof = async proof => {
     console.log("it worked!!!!!");
     return await BCaxiosWithAuth().post("mine/", { proof });
   } catch (err) {
-    console.log("err", err);
+    console.log(err.response);
+    return { data: { cooldown: 20 } };
   }
 };
 const getLastProof = async () => {
@@ -89,6 +90,7 @@ const mineCoins = async cooldown => {
   );
 
   // Finds a new valid proof
+
   const proof = await proof_of_work(last_proof.proof, last_proof.difficulty);
   console.log("New_proof returned", proof);
 
